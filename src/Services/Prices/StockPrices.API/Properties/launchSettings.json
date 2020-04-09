@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "StockPrices.API": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ALPHAVANTAGE_APIKEY": "N5DDVHJ6IPOOUW7S",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001"
+    }
+  }
+}
