@@ -2,33 +2,12 @@ version: '3'
 
 services:
         
-        #identityserverdata:
-        #        image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
-        #        environment:
-        #                - ACCEPT_EULA=Y
-        #                - SA_PASSWORD=YourStrong@Passw0rd
-        #        ports:
-        #                - 1433:1433
-        #
-        #identityserver:
-        #        image: ???
-        #       build:
-        #                context: .
-        #                dockerfile: Services/Identity/Identity.API/Dockerfile
-        #        depends_on:
-        #                - identityserverdata
-        #        environment:
-        #                - ASPNETCORE_URLS=https://+;http://+
-        #                - ASPNETCORE_HTTPS_PORT=7001
-        #                - ASPNETCORE_Kestrel__Certificates__Default__Password=password123
-        #                - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Identity.API.pfx
-        #        volumes:
-        #                - ${HOME}/.aspnet/https:/https/
-        #        ports: 
-        #                - 6902:80
-        #                - 7002:443
 
         walletdata:
+                image: mongo:latest
+                ports:
+                        - 27017-27019:27017-27019
+        userdata:
                 image: mongo:latest
                 ports:
                         - 27017-27019:27017-27019
@@ -50,3 +29,24 @@ services:
                 ports:
                         - 6901:80
                         - 7001:443
+
+        user-api:
+                image: bjsmiley/user.api
+                build:
+                        context: .
+                        dockerfile: Services/Users/Users.API/Dockerfile
+                depends_on:
+                        - userdata
+                        - wallet-api
+                environment:
+                        - ASPNETCORE_URLS=https://+;http://+
+                        - ASPNETCORE_HTTPS_PORT=7002
+                        - ASPNETCORE_Kestrel__Certificates__Default__Password=password123
+                        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/Users.API.pfx
+                volumes:
+                        - ${HOME}/.aspnet/https:/https/
+                ports:
+                        - 6902:80
+                        - 7002:443
+
+

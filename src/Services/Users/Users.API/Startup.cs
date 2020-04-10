@@ -31,14 +31,13 @@ namespace Users.API
 		{
 			services.AddControllers();
 
+			services.AddHttpsRedirection(opts => opts.HttpsPort = 443);
+
 			services.AddCustomJwtAuthentication(Configuration);
 
 			services.AddUserDatabase(Configuration);
 
-			//services.AddMediatR(typeof(Startup));
 			services.AddMediatR(Assembly.GetExecutingAssembly());
-			//services.AddMediatR(typeof(UserCreatedEventHandler).Assembly);
-			//services.AddMediatR(Assembly);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

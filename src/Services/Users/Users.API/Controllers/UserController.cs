@@ -17,7 +17,7 @@ using System.Security.Claims;
 namespace Users.API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -32,7 +32,7 @@ namespace Users.API.Controllers
         }
 
         [Route("signup")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> SignUpAsync([FromBody] SignUpCommand command)
         {
@@ -48,7 +48,7 @@ namespace Users.API.Controllers
         }
 
         [Route("signin")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> SignInAsync([FromBody] SignInCommand command)
         {
@@ -62,7 +62,7 @@ namespace Users.API.Controllers
 
         [Route("all")]
         [HttpGet]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllAsync()
         {
             var users = await _mediator.Send(new AllUsersQuery());

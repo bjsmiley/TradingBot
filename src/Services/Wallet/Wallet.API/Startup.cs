@@ -31,18 +31,6 @@ namespace Wallet.API
         {
             services.AddControllers();
 
-            // securing this api
-            //services.Configure<IdentitySettings>(
-            //    Configuration.GetSection(nameof(IdentitySettings)));
-
-            //services.AddAuthentication("Bearer")
-            //.AddIdentityServerAuthentication(options =>
-            //{
-            //    options.Authority = Configuration.GetValue<string>("IdentitySettings:ConnectionString");
-            //    //options.RequireHttpsMetadata = false;
-
-            //    options.ApiName = "wallet";
-            //});
 
             services.AddHttpsRedirection(opts => opts.HttpsPort = 443);
 
