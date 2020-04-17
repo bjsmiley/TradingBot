@@ -53,6 +53,7 @@ namespace StockPrices.API.Infrastructure.Workers
 					if (!result) throw new NotSupportedException();
 
 					await writer.WriteAsync(response);
+					writer.Complete();
 				}
 				else
 				{
@@ -97,7 +98,7 @@ namespace StockPrices.API.Infrastructure.Workers
 				Price = (await channel.Reader.ReadAsync()).Price
 			};
 			
-
+			
 		}
 
 	}

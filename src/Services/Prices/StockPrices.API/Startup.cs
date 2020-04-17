@@ -1,36 +1,47 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StockPrices.API.Application.Models;
-using StockPrices.API.Infrastructure.Services;
-using StockPrices.API.Infrastructure.Workers;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 
-namespace StockPrices.API
+using Hangfire;
+using Hangfire.MemoryStorage;
+
+using RabbitMQ.Client;
+using TradingBot.Shared.Messaging.Rabbit;
+using Microsoft.Extensions.ObjectPool;
+
+namespace TradingBot.Services.StockPrices.API
 {
 	public class Startup
 	{
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
+
+		public IConfiguration Configuration { get; }
+
 		// This method gets called by the runtime. Use this method to add services to the container.
-		// For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
 		public void ConfigureServices(IServiceCollection services)
 		{
-			var apiKey = Environment.GetEnvironmentVariable("ALPHAVANTAGE_APIKEY") ?? throw new Exception("Enviroment variable 'ALPHAVANTAGE_APIKEY' is not set. This is needed for pricing data.");
+			services.AddControllers();
+			services.AddHangfire(x =>
+			{
+				x.UseMemoryStorage();
+			});
+			services.AddHangfireServer();
 
-			// default alpha vantage client
-			services.AddSingleton(new AlphaVantageSettings { ApiKey = apiKey });
-			services.AddSingleton<IPricingService, AlphaVantageClient>();
+			services.AddRabbitMQ(Configuration);
 
-
-			services.AddSingleton<IRequestPriceService,AlphaVantageWorker>();
-			services.AddHostedService<ManagedWorkerService<AlphaVantageWorker>>();
-			
-
-			services.AddGrpc();
 			
 		}
 
@@ -42,18 +53,44 @@ namespace StockPrices.API
 				app.UseDeveloperExceptionPage();
 			}
 
+			app.UseHttpsRedirection();
+
 			app.UseRouting();
+
+			app.UseAuthorization();
+
+			app.UseHangfireServer();
+			app.UseHangfireDashboard();
 
 			app.UseEndpoints(endpoints =>
 			{
-				//endpoints.MapGrpcService<GreeterService>();
-				endpoints.MapGrpcService<PricingService>();
-
-				endpoints.MapGet("/", async context =>
-				{
-					await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-				});
+				endpoints.MapControllers();
 			});
+		}
+
+		
+	}
+
+	static class Extensions
+	{
+		public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration Configuration)
+		{
+			services.Configure<RabbitMQSettings>(Configuration.GetSection("RabbitMQ"));
+			//return services.AddSingleton<IConnection>(x =>
+			//{
+			//	var settings = x.GetRequiredService<IOptions<RabbitMqSettings>>().Value;
+			//	var connectionFactory = new ConnectionFactory();
+			//	connectionFactory.Uri = new Uri($"amqp://{settings.UserName}:{settings.Password}@{settings.Host}:{settings.Port}");
+
+			//	return connectionFactory.CreateConnection();
+
+			//});
+
+			services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+			services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
+			services.AddSingleton<IRabbitMQManager, RabbitMQManager>();
+
+			return services;
 		}
 	}
 }

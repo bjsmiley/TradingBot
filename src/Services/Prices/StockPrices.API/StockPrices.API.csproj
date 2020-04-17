@@ -2,17 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>TradingBot.Services.StockPrices.API</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\prices.proto" GrpcServices="Server" />
+    <PackageReference Include="Hangfire" Version="1.7.11" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.AspNetCore" Version="2.27.0" />
-    <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />
-    <PackageReference Include="ThreeFourteen.AlphaVantage" Version="1.0.3" />
+    <ProjectReference Include="..\..\..\Shared\Messaging\Rabbit\Rabbit.csproj" />
   </ItemGroup>
+
 
 </Project>
