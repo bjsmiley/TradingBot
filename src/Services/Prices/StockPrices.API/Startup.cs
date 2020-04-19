@@ -18,6 +18,10 @@ using Hangfire.MemoryStorage;
 using RabbitMQ.Client;
 using TradingBot.Shared.Messaging.Rabbit;
 using Microsoft.Extensions.ObjectPool;
+using MediatR;
+using System.Reflection;
+using TradingBot.Services.StockPrices.API.Infrastructure.Workers;
+using TradingBot.Services.StockPrices.API.Application.Workers;
 
 namespace TradingBot.Services.StockPrices.API
 {
@@ -33,14 +37,23 @@ namespace TradingBot.Services.StockPrices.API
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+
+			services.AddLogging(config => config.AddConsole());
+
 			services.AddControllers();
-			services.AddHangfire(x =>
-			{
-				x.UseMemoryStorage();
-			});
-			services.AddHangfireServer();
+			//services.AddHangfire(x =>
+			//{
+			//	x.UseMemoryStorage();
+			//});
+			//services.AddHangfireServer();
+
+			services.AddAlphaVantage();
 
 			services.AddRabbitMQ(Configuration);
+
+			services.AddMediatR(Assembly.GetExecutingAssembly());
+
+			
 
 			
 		}
@@ -59,8 +72,8 @@ namespace TradingBot.Services.StockPrices.API
 
 			app.UseAuthorization();
 
-			app.UseHangfireServer();
-			app.UseHangfireDashboard();
+			//app.UseHangfireServer();
+			//app.UseHangfireDashboard();
 
 			app.UseEndpoints(endpoints =>
 			{
@@ -71,7 +84,7 @@ namespace TradingBot.Services.StockPrices.API
 		
 	}
 
-	static class Extensions
+	static class StartupExtensions
 	{
 		public static IServiceCollection AddRabbitMQ(this IServiceCollection services, IConfiguration Configuration)
 		{
@@ -91,6 +104,17 @@ namespace TradingBot.Services.StockPrices.API
 			services.AddSingleton<IRabbitMQManager, RabbitMQManager>();
 
 			return services;
+		}
+		
+		public static IServiceCollection AddAlphaVantage(this IServiceCollection services)
+		{
+			var apiKey = Environment.GetEnvironmentVariable("ALPHAVANTAGE_APIKEY") ?? throw new Exception("Enviroment variable 'ALPHAVANTAGE_APIKEY' is not set. This is needed for pricing data.");
+			
+			services.AddSingleton(new AlphaVantageSettings { ApiKey = apiKey });
+			
+			services.AddSingleton<AlphaVantageWorker>();
+
+			return services.AddHostedService<ManagedWorkerService<AlphaVantageWorker>>();
 		}
 	}
 }

@@ -7,8 +7,10 @@ using System.Threading;
 
 using Hangfire;
 using TradingBot.Shared.Messaging.Rabbit;
+using MediatR;
 
 using TradingBot.Services.StockPrices.API.Application.Models;
+using TradingBot.Services.StockPrices.API.Application.Queries;
 
 namespace TradingBot.Services.StockPrices.API.Controllers
 {
@@ -17,46 +19,71 @@ namespace TradingBot.Services.StockPrices.API.Controllers
 	public class PriceController : ControllerBase
 	{
 		private readonly IRabbitMQManager _rabbitMQ;
-		public PriceController(IRabbitMQManager rabbitMQ)
+		private readonly IMediator _mediator;
+		private readonly AlphaVantageSettings _default;
+
+		public PriceController(IRabbitMQManager rabbitMQ, IMediator mediator, AlphaVantageSettings defaultAlpha)
 		{
 			_rabbitMQ = rabbitMQ;
+			_mediator = mediator;
+			_default = defaultAlpha;
+		}
+
+		[HttpGet]
+		[Route("demo/get")]
+		public async Task<IActionResult> GetPricesDemo(	[FromQuery(Name = "symbol")] string[] symbols,
+													[FromQuery(Name = "type")] string type = "query")
+		{
+			type = type.ToLower() switch
+			{
+				"sell" => "sell",
+				"buy" => "buy",
+				_ => "query"
+			};
+
+			var query = new PriceQuery
+			{
+				Symbols = symbols,
+				ApiKey = _default.ApiKey,
+				Type = type
+			};
+
+			await _mediator.Send(query);
+
+			return Ok();
 		}
 
 		[HttpGet]
 		[Route("get")]
-		public IActionResult GetPrices([FromQuery(Name = "symbol")] string[] symbols, 
-											 [FromBody] Request request)
+		public async Task<IActionResult> GetPrices( [FromBody] Request request,
+											  [FromQuery(Name = "symbol")] string[] symbols, 
+											  [FromQuery(Name = "type")] string type = "query" )
 		{
-			var type = request.Type.ToLower() switch
+
+			if (string.IsNullOrEmpty(request.ApiKey))
+				return BadRequest();
+			
+			type = type.ToLower() switch
 			{
 				"sell" => "sell",
 				"buy" => "buy",
 				_ => "query"
 			};
 
-			// create background job
-
-			_rabbitMQ.Publish(new { Stocks = symbols }, "exchange.price", "topic", $"price.{type}");
-
-			return Ok();
-		}
-
-		[HttpGet]
-		[Route("get/stream")] 
-		public IActionResult GetPriceStreams([FromQuery(Name = "symbol")] string[] symbols,
-											[FromBody] Request request)
-		{
-			var type = request.Type.ToLower() switch
+			var query = new PriceQuery
 			{
-				"sell" => "sell",
-				"buy" => "buy",
-				_ => "query"
+				ApiKey = request.ApiKey,
+				Symbols = symbols,
+				Type = type
 			};
 
-			for(int i = 0; i < 3; i++)
-				_rabbitMQ.Publish(new { Stocks = symbols }, "exchange.price", "topic", $"price.{type}");
+			await _mediator.Send(query);
 
 			return Ok();
+
+
+
 		}
+
 	}
 }
