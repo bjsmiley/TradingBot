@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Users.API.Application.Models;
-using Users.API.Domain.Events;
+using TradingBot.Services.Users.API.Application.Models;
+using TradingBot.Services.Users.API.Domain.Events;
 
-namespace Users.API.Application.Commands
+namespace TradingBot.Services.Users.API.Application.Commands
 {
 	public class DeleteCommandHandler : IRequestHandler<DeleteCommand, bool>
 	{

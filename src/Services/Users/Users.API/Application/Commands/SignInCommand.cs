@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 
 using MediatR;
-using Users.API.Domain.Dtos;
+using TradingBot.Services.Users.API.Domain.Dtos;
 
-namespace Users.API.Application.Commands
+namespace TradingBot.Services.Users.API.Application.Commands
 {
 	public class SignInCommand : IRequest<AuthenticateDto>
 	{

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Wallet.API.Models;
+using TradingBot.Services.Wallet.API.Application.Models;
 using MongoDB.Driver;
 
-namespace Wallet.API.Infrastructure.Repositories
+namespace TradingBot.Services.Wallet.API.Infrastructure.Repositories
 {
 	public class WalletRepository : IWalletRepository
 	{

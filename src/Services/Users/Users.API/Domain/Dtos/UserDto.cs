@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Users.API.Domain.Dtos
+namespace TradingBot.Services.Users.API.Domain.Dtos
 {
 	public class UserDto
 	{

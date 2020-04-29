@@ -1,7 +1,7 @@
 ﻿using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-namespace Wallet.API.Application.Models
+namespace TradingBot.Services.Wallet.API.Application.Models
 {
     public class WalletItem
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Wallet.API.Application.Commands
+namespace TradingBot.Services.Wallet.API.Application.Commands
 {
     public class ModifyWalletAmountCommand
     {

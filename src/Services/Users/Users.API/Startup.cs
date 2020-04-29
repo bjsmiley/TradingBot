@@ -11,11 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MediatR;
-using Users.API.Extensions;
+using TradingBot.Services.Users.API.Extensions;
 using System.Reflection;
-using Users.API.Domain.Events;
+using TradingBot.Services.Users.API.Domain.Events;
 
-namespace Users.API
+namespace TradingBot.Services.Users.API
 {
 	public class Startup
 	{
@@ -29,6 +29,8 @@ namespace Users.API
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddLogging(config => config.AddConsole());
+
 			services.AddControllers();
 
 			services.AddHttpsRedirection(opts => opts.HttpsPort = 443);

@@ -6,15 +6,15 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Users.API.Application.Models;
-using Users.API.Application.Commands;
-using Users.API.Application.Queries;
+using TradingBot.Services.Users.API.Application.Models;
+using TradingBot.Services.Users.API.Application.Commands;
+using TradingBot.Services.Users.API.Application.Queries;
 using Microsoft.AspNetCore.Authorization;
-using Users.API.Domain.Dtos;
-using Users.API.Domain.Events;
+using TradingBot.Services.Users.API.Domain.Dtos;
+using TradingBot.Services.Users.API.Domain.Events;
 using System.Security.Claims;
 
-namespace Users.API.Controllers
+namespace TradingBot.Services.Users.API.Controllers
 {
     [Route("api/[controller]")]
     //[Authorize]

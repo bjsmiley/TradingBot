@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-namespace Users.API.Domain.Events
+namespace TradingBot.Services.Users.API.Domain.Events
 {
 	public class UserDeletedEvent : INotification
 	{

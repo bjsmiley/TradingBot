@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Users.API.Application.Models
+namespace TradingBot.Services.Users.API.Application.Models
 {
 	public interface IUserRepository
 	{

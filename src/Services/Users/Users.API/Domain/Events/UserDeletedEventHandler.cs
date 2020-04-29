@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Users.API.Domain.Events
+namespace TradingBot.Services.Users.API.Domain.Events
 {
 	public class UserDeletedEventHandler : INotificationHandler<UserDeletedEvent>
 	{

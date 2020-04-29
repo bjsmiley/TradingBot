@@ -11,11 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TradingBot.Services.Wallet.API.Application.Models;
+using TradingBot.Services.Wallet.API.Infrastructure.Repositories;
 
-using Wallet.API.Infrastructure.Repositories;
-using Wallet.API.Models;
-
-namespace Wallet.API
+namespace TradingBot.Services.Wallet.API
 {
     public class Startup
     {
@@ -29,6 +28,8 @@ namespace Wallet.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(config => config.AddConsole());
+
             services.AddControllers();
 
 
@@ -42,7 +43,7 @@ namespace Wallet.API
             services.AddSingleton<IWalletDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<WalletDatabaseSettings>>().Value);
 
-            services.AddSingleton<IWalletRepository,WalletRepository>();
+            services.AddSingleton<IWalletRepository, WalletRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

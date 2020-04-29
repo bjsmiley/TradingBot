@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using Wallet.API.Application.Models;
-using Wallet.API.Application.Commands;
-using Wallet.API.Application.Queries;
+using TradingBot.Services.Wallet.API.Application.Models;
+using TradingBot.Services.Wallet.API.Application.Commands;
 
-namespace Wallet.API.Controllers
+namespace TradingBot.Services.Wallet.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

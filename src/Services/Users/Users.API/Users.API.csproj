@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>TradingBot.Services.Users.API</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,10 +7,17 @@ services:
                 image: mongo:latest
                 ports:
                         - 27017-27019:27017-27019
+
         userdata:
                 image: mongo:latest
                 ports:
                         - 27017-27019:27017-27019
+
+        rabbit-mq:
+                image: rabbitmq:3-management
+                ports:
+                        - 5672:5672
+                        - 15672-15672
 
         wallet-api:
                 image: bjsmiley/wallet.api

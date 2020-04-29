@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Wallet.API.Application.Models
+namespace TradingBot.Services.Wallet.API.Application.Models
 {
     public interface IWalletRepository
     {

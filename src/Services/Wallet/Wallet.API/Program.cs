@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Wallet.API
+namespace TradingBot.Services.Wallet.API
 {
     public class Program
     {

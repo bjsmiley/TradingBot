@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Users.API.Application.Models;
+using TradingBot.Services.Users.API.Application.Models;
 
 using MongoDB.Driver;
 using System.Linq.Expressions;
 
-namespace Users.API.Infrastructure.Repositories
+namespace TradingBot.Services.Users.API.Infrastructure.Repositories
 {
 	public class UserRepository : IUserRepository
 	{

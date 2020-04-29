@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace Users.API.Application.Commands
+namespace TradingBot.Services.Users.API.Application.Commands
 {
 	public class DeleteCommand : IRequest<bool>
 	{

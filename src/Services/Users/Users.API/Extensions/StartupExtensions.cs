@@ -15,10 +15,10 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 
-using Users.API.Infrastructure.Repositories;
-using Users.API.Application.Models;
+using TradingBot.Services.Users.API.Infrastructure.Repositories;
+using TradingBot.Services.Users.API.Application.Models;
 
-namespace Users.API.Extensions
+namespace TradingBot.Services.Users.API.Extensions
 {
 	public static class StartupExtensions
 	{

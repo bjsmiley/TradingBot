@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Users.API
+namespace TradingBot.Services.Users.API
 {
 	public class Program
 	{
