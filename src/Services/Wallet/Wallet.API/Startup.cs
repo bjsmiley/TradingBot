@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,18 +34,12 @@ namespace TradingBot.Services.Wallet.API
 
             services.AddControllers();
 
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
 
             services.AddHttpsRedirection(opts => opts.HttpsPort = 443);
 
-            // collect wallet db settings from appsettings.json
-            services.Configure<WalletDatabaseSettings>(
-                Configuration.GetSection(nameof(WalletDatabaseSettings)));
-
-            // inject the settings for use later on
-            services.AddSingleton<IWalletDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<WalletDatabaseSettings>>().Value);
-
-            services.AddSingleton<IWalletRepository, WalletRepository>();
+            services.AddWalletDatabase(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,4 +64,21 @@ namespace TradingBot.Services.Wallet.API
             });
         }
     }
+
+    public static class StartUpExtensions
+    {
+        public static IServiceCollection AddWalletDatabase(this IServiceCollection services, IConfiguration configuration)
+        {
+            // collect wallet db settings from appsettings.json
+            services.Configure<WalletDatabaseSettings>(
+                configuration.GetSection(nameof(WalletDatabaseSettings)));
+
+            // inject the settings for use later on
+            services.AddSingleton<IWalletDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<WalletDatabaseSettings>>().Value);
+
+            return services.AddSingleton<IWalletRepository, WalletRepository>();
+        }
+    }
+
 }

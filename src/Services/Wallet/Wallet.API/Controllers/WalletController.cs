@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MediatR;
 
 using TradingBot.Services.Wallet.API.Application.Models;
 using TradingBot.Services.Wallet.API.Application.Commands;
@@ -17,43 +18,22 @@ namespace TradingBot.Services.Wallet.API.Controllers
 
         private readonly ILogger<WalletController> _logger;
         private readonly IWalletRepository _walletRepo;
+        private readonly IMediator _mediator;
 
       
 
-        public WalletController(ILogger<WalletController> logger, IWalletRepository walletRepo)
+        public WalletController(ILogger<WalletController> logger, IWalletRepository walletRepo, IMediator mediator)
         {
             _logger = logger;
             _walletRepo = walletRepo;
+            _mediator = mediator;
         }
 
-        #region Queries
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<WalletItem>>> GetAll()
-        {
-             var wallets = await _walletRepo.GetAll();
-
-            return Ok(wallets);
-        }
-
-        //[Route("{id}")]
-        [HttpGet]
-        public async Task<IActionResult> GetWalletById([FromBody] Guid id)
-        {
-            var wallet = await _walletRepo.GetWalletById(id);
-
-            if (wallet == null)
-                return NotFound();
-
-            return Ok(wallet);
-        }
-
-        //[Route("{id}/owner")]
         [Route("owner")]
         [HttpGet]
         public async Task<IActionResult> GetWalletByOwner([FromBody] Guid id)
         {
-            var wallet = await _walletRepo.GetWalletByOwner(id);
+            var wallet = await _walletRepo.GetByOwnerAsync(id);
 
             if (wallet == null)
                 return NotFound();
@@ -61,93 +41,71 @@ namespace TradingBot.Services.Wallet.API.Controllers
             return Ok(wallet);
         }
 
-        #endregion
-
-        #region Commands
-
-        //[Route("{id}/owner")]
         [Route("owner")]
         [HttpPost]
-        public async Task<IActionResult> CreateNewWallet([FromBody] Guid id)
+        public async Task<IActionResult> CreateNewWallet([FromBody] CreateCommand command)
         {
-            if (id == null)
-                return NotFound();
 
-            var existing = await _walletRepo.GetWalletByOwner(id);
+            var result = await _mediator.Send(command);
 
-            if(existing != null)
-                return BadRequest("This user already has a wallet. Cannot create new wallet");
+            if (result == null)
+                return BadRequest(new { Error = "User already owns a wallet." });
 
-            var newWallet = new WalletItem
-            {
-                Id = Guid.NewGuid(),
-                Owner = id,
-                Created = DateTime.UtcNow,
-            };
-
-            if(await _walletRepo.NewWallet(newWallet))
-            {
-                //return CreatedAtRoute(nameof(GetWalletById), newWallet.Id, newWallet);
-                return Created($"/api/wallet/{newWallet.Id}", newWallet);
-            }
-
-            return BadRequest("{\"error\" : \"Couldnt make a new wallet sorry :(\"}");
+            return Ok(result);
         }
 
-        [Route("amount")]
+        [Route("amount/add")]
         [HttpPatch]
-        public async Task<IActionResult> ModifyWalletAmount([FromBody] ModifyWalletAmountCommand command)
+        public async Task<IActionResult> AddWalletAmount([FromBody] UpdateMoneyCommand command)
         {
-            WalletItem w;
+            command.By = MoneyUpdate.Adding;
 
-            
+            var wallet = await _mediator.Send(command);
 
-            if(command.Difference > 0)
-                w = await _walletRepo.AddMoney(command.WalletId, command.Difference);
-            else
-                w = await _walletRepo.RemoveMoney(command.WalletId, command.Difference);
-
-            if (w == null)
+            if (wallet == null)
                 return NotFound();
-
-            return Ok(w);
+            else
+                return Ok(wallet);
         }
 
-        //[Route("{id}")]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteById([FromBody] Guid id)
+        [Route("amount/sub")]
+        [HttpPatch]
+        public async Task<IActionResult> SubWalletAmount([FromBody] UpdateMoneyCommand command)
         {
-            var deletedWallet = await _walletRepo.DeleteWalletById(id);
+            command.By = MoneyUpdate.Subtracting;
 
-            if (deletedWallet != null)
+            var wallet = await _mediator.Send(command);
+
+            if (wallet == null)
+                return NotFound();
+            else
+                return Ok(wallet);
+        }
+
+
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteById([FromBody] DeleteByIdCommand command)
+        {
+
+            var success = await _mediator.Send(command);
+
+            if (success)
                 return Ok();
             else
-                return BadRequest();
+                return NotFound();
         }
 
-        //[Route("{id}/owner")]
         [Route("owner")]
         [HttpDelete]
-        public async Task<IActionResult> DeleteByOwner([FromBody] Guid id)
+        public async Task<IActionResult> DeleteByOwner([FromBody] DeleteByOwnerCommand command)
         {
-            var deletedWallet = await _walletRepo.DeleteWalletByOwner(id);
+            var success = await _mediator.Send(command);
 
-            if (deletedWallet != null)
+            if (success)
                 return Ok();
             else
-                return BadRequest();
+                return NotFound();
         }
-
-        #endregion
-
-
-
-
-
-
-
-
-
-
     }
 }

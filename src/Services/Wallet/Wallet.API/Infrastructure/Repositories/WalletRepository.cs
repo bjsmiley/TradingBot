@@ -22,54 +22,47 @@ namespace TradingBot.Services.Wallet.API.Infrastructure.Repositories
 
         }
 
-		public async Task<WalletItem> GetWalletById( Guid id )
-        {
-            var walletCursor = await _wallets.FindAsync(w => w.Id == id);
-
-            return await walletCursor.FirstOrDefaultAsync();
-
-        }
-        public async Task<WalletItem> GetWalletByOwner( Guid id )
+        public async Task<WalletItem> GetByOwnerAsync( Guid id )
         {
             var walletCursor = await _wallets.FindAsync(w => w.Owner == id);
 
             return await walletCursor.FirstOrDefaultAsync();
         }
 
-        public Task<bool> NewWallet( WalletItem wallet )
+        public Task CreateAsync( WalletItem wallet )
         {
-            if(wallet != null)
-            {
-                _wallets.InsertOneAsync(wallet);
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            return _wallets.InsertOneAsync(wallet);    
         }
-        public Task<WalletItem> AddMoney(Guid id, decimal amount )
+
+        public Task<WalletItem> UpdateMoneyAsync(Guid id, double amount, MoneyUpdate by )
         {
 
             var filter = Builders<WalletItem>.Filter.Eq(w => w.Id, id);
 
+            amount = by switch
+            {
+                MoneyUpdate.Adding => amount,
+                _ => amount * -1
+            };
+   
             var updater = Builders<WalletItem>.Update.Inc(w => w.Amount, amount);
 
             return _wallets.FindOneAndUpdateAsync(filter, updater);
 
         }
-        public Task<WalletItem> RemoveMoney(Guid id, decimal amount )
+
+        public async Task<bool> DeleteByIdAsync( Guid id )
         {
-            return AddMoney(id, amount * -1);
+            var result = await _wallets.DeleteOneAsync(w => w.Id == id);
+            return result.IsAcknowledged;
         }
-        public Task<WalletItem> DeleteWalletById( Guid id )
+        public async Task<bool> DeleteByOwnerAsync( Guid id )
         {
-            return _wallets.FindOneAndDeleteAsync(w => w.Id == id);
-        }
-        public Task<WalletItem> DeleteWalletByOwner( Guid id )
-        {
-            return _wallets.FindOneAndDeleteAsync(w => w.Owner == id);
+            var result = await _wallets.DeleteOneAsync(w => w.Owner == id);
+            return result.IsAcknowledged;
         }
 
-        public async Task<IEnumerable<WalletItem>> GetAll()
+        public async Task<IEnumerable<WalletItem>> GetAllAsync()
         {
             var t = await _wallets.FindAsync(w => true);
 

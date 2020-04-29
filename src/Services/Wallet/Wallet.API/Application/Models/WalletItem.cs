@@ -8,8 +8,8 @@ namespace TradingBot.Services.Wallet.API.Application.Models
         
         public Guid Id { get; set; }
 
-        [BsonRepresentation(BsonType.Decimal128)]
-        public decimal Amount { get; set; } 
+        //[BsonRepresentation(BsonType.Double)]
+        public double Amount { get; set; } 
         public Guid Owner { get; set; }
         public DateTime Created { get; set; }       
     }
