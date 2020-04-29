@@ -46,6 +46,7 @@ namespace TradingBot.Services.StockPrices.API
 			//	x.UseMemoryStorage();
 			//});
 			//services.AddHangfireServer();
+			services.AddHttpsRedirection(opts => opts.HttpsPort = 443);
 
 			services.AddAlphaVantage();
 
