@@ -1,0 +1,36 @@
+{
+  "ReRoutes": [
+    {
+      "DownstreamPathTemplate": "/api/user/{etc}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7002
+        }
+      ],
+      "UpstreamPathTemplate": "/user/{etc}",
+      "UpstreamHttpMethod": [ "GET","POST","DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/wallet/{etc}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7001
+        }
+      ],
+      "UpstreamPathTemplate": "/wallet/{etc}",
+      "UpstreamHttpMethod": [ "GET", "POST", "DELETE","PATCH" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500,
+      "PollingInterval": 5000,
+      "ConfigurationKey": "TB-Gateway"
+    }
+  }
+}  

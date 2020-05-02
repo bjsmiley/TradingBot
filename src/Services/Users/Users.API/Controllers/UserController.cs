@@ -27,8 +27,8 @@ namespace TradingBot.Services.Users.API.Controllers
 
         public UserController(ILogger<UserController> logger, IMediator mediator)
         {
-            _logger = logger ?? throw new ArgumentNullException("logger");
-            _mediator = mediator ?? throw new ArgumentNullException("mediator");
+            _logger = logger;
+            _mediator = mediator;
         }
 
         [Route("signup")]
@@ -55,7 +55,7 @@ namespace TradingBot.Services.Users.API.Controllers
             var authenticateDto = await _mediator.Send(command);
 
             if (authenticateDto == null)
-                return BadRequest(new { message = "Email/Password incorrect." });
+                return BadRequest(new { error = "Email/Password incorrect." });
 
             return Ok(authenticateDto);
         }
